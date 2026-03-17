@@ -47,7 +47,7 @@ COPY --from=builder /app/derper /app/derper
 COPY build_cert.sh /app/
 
 # build self-signed certs && start derper
-CMD bash /app/build_cert.sh $DERP_HOST $DERP_CERTS /app/san.conf && \
+CMD sh /app/build_cert.sh $DERP_HOST $DERP_CERTS /app/san.conf && \
     tailscale netcheck && \
     /app/derper --hostname=$DERP_HOST \
     --certmode=manual \
