@@ -37,18 +37,18 @@ ENV TS_EXTRA_ARGS="--advertise-tags=tag:container"
 ENV DERP_CERT_MODE=manual
 # ==========================
 
-# 安装依赖（与原 Dockerfile 保持一致）
+# 安装依赖
 RUN apk update && \
     apk add openssl curl
-
-#RUN curl -fsSL https://tailscale.com/install.sh | sh
 
 # 复制构建好的二进制文件和证书生成脚本
 COPY --from=builder /app/derper /app/derper
 COPY build_cert.sh /app/
 
-# build self-signed certs && start derper
-CMD sh /app/build_cert.sh $DERP_HOST $DERP_CERTS /app/san.conf && \
+# 智能启动脚本：manual 执行自签名证书，letsencrypt 跳过自签名直接启动
+CMD if [ "$DERP_CERT_MODE" = "manual" ]; then \
+    sh /app/build_cert.sh $DERP_HOST $DERP_CERTS /app/san.conf; \
+    fi && \
     tailscale netcheck && \
     /app/derper --hostname=$DERP_HOST \
     --certmode=$DERP_CERT_MODE \
