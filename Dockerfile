@@ -34,6 +34,7 @@ ENV DERP_VERIFY_CLIENTS=false
 ENV TS_AUTHKEY=""
 ENV TS_STATE_DIR=/var/lib/tailscale
 ENV TS_EXTRA_ARGS="--advertise-tags=tag:container"
+ENV DERP_CERT_MODE=manual
 # ==========================
 
 # 安装依赖（与原 Dockerfile 保持一致）
@@ -50,7 +51,7 @@ COPY build_cert.sh /app/
 CMD sh /app/build_cert.sh $DERP_HOST $DERP_CERTS /app/san.conf && \
     tailscale netcheck && \
     /app/derper --hostname=$DERP_HOST \
-    --certmode=manual \
+    --certmode=$DERP_CERT_MODE \
     --certdir=$DERP_CERTS \
     --stun=$DERP_STUN  \
     --a=$DERP_ADDR \
